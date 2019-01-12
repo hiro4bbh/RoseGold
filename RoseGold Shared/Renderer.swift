@@ -28,27 +28,23 @@ class Renderer: NSObject, MTKViewDelegate {
     var environment: UnsafeMutablePointer<Environment>
     let startTime: TimeInterval
     var lastReportTime: TimeInterval
-    var lastReportNrun: Float
+    var lastReportNframe: Float
     var outputTexture: MTLTexture
     let threadGroupSize: MTLSize
     let threadGroupCount: MTLSize
 
     init?(metalKitView: MTKView) {
+        metalKitView.depthStencilPixelFormat = MTLPixelFormat.depth32Float_stencil8
+        metalKitView.sampleCount = 1
         device = metalKitView.device!
         commandQueue = device.makeCommandQueue()!
-
-        metalKitView.depthStencilPixelFormat = MTLPixelFormat.depth32Float_stencil8
-        metalKitView.colorPixelFormat = MTLPixelFormat.bgra8Unorm_srgb
-        metalKitView.sampleCount = 1
-
-        let mtlVertexDescriptor = Renderer.buildMetalVertexDescriptor()
-
         do {
             computePipelineState = try Renderer.buildComputePipelineWithDevice(device: device)
         } catch {
             print("Unable to compile compute pipeline state.  Error info: \(error)")
             return nil
         }
+        let mtlVertexDescriptor = Renderer.buildMetalVertexDescriptor()
         do {
             renderPipelineState = try Renderer.buildRenderPipelineWithDevice(device: device,
                                                                             metalKitView: metalKitView,
@@ -57,11 +53,10 @@ class Renderer: NSObject, MTKViewDelegate {
             print("Unable to compile render pipeline state.  Error info: \(error)")
             return nil
         }
-
         let depthStateDesciptor = MTLDepthStencilDescriptor()
         depthStateDesciptor.depthCompareFunction = MTLCompareFunction.less
         depthStateDesciptor.isDepthWriteEnabled = true
-        depthState = device.makeDepthStencilState(descriptor:depthStateDesciptor)!
+        depthState = device.makeDepthStencilState(descriptor: depthStateDesciptor)!
 
         viewportSize = uint2(0, 0)
         environmentBuffer = device.makeBuffer(length: MemoryLayout<Environment>.size, options: MTLResourceOptions.init(rawValue: 0))!
@@ -69,7 +64,7 @@ class Renderer: NSObject, MTKViewDelegate {
         environment = UnsafeMutableRawPointer(environmentBuffer.contents()).bindMemory(to:Environment.self, capacity:1)
         startTime = NSDate().timeIntervalSince1970
         lastReportTime = startTime
-        lastReportNrun = 0
+        lastReportNframe = 0
 
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: MTLPixelFormat.bgra8Unorm, width: 1024, height: 1024, mipmapped: false)
         textureDescriptor.usage = MTLTextureUsage.init(rawValue: MTLTextureUsage.shaderRead.rawValue|MTLTextureUsage.shaderWrite.rawValue)
@@ -151,7 +146,7 @@ class Renderer: NSObject, MTKViewDelegate {
         ];
         /// Per frame updates hare
         _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
-        environment[0].nrun += 1;
+        environment[0].nframe += 1;
         environment[0].timestamp = Float(NSDate().timeIntervalSince1970 - startTime)
 
         if let commandBuffer = commandQueue.makeCommandBuffer() {
@@ -161,10 +156,10 @@ class Renderer: NSObject, MTKViewDelegate {
                     let now = NSDate().timeIntervalSince1970
                     let dtime = now - self.lastReportTime
                     if dtime >= 1.0 {
-                        let dnrun = self.environment[0].nrun - self.lastReportNrun
-                        print(String(format: "ts=%.3f: %.1f fps (total %.0f frames)", self.environment[0].timestamp, dnrun/Float(dtime), self.environment[0].nrun))
+                        let dnframe = self.environment[0].nframe - self.lastReportNframe
+                        print(String(format: "ts=%.3f: %.1f fps (total %.f frames)", self.environment[0].timestamp, dnframe/Float(dtime), self.nframe()))
                         self.lastReportTime = now
-                        self.lastReportNrun = self.environment[0].nrun
+                        self.lastReportNframe = self.environment[0].nframe
                     }
                 }
                 semaphore.signal()
@@ -211,5 +206,12 @@ class Renderer: NSObject, MTKViewDelegate {
         /// Respond to drawable size or orientation changes here
         viewportSize.x = UInt32(size.width)
         viewportSize.y = UInt32(size.height)
+    }
+    
+    func nframe() -> Float {
+        return environment[0].nframe
+    }
+    func texture() -> MTLTexture {
+        return outputTexture
     }
 }

@@ -45,7 +45,7 @@ typedef struct {
 } Vertex;
 
 typedef struct {
-    float nrun;
+    float nframe;
     float timestamp;
 } Environment;
 

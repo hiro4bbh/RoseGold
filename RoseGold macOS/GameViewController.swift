@@ -11,35 +11,49 @@ import MetalKit
 
 // Our macOS specific view controller
 class GameViewController: NSViewController {
-
     var renderer: Renderer!
     var mtkView: MTKView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         guard let mtkView = self.view as? MTKView else {
             print("View attached to GameViewController is not an MTKView")
             return
         }
-
         // Select the device to render with.  We choose the default device
         guard let defaultDevice = MTLCreateSystemDefaultDevice() else {
             print("Metal is not supported on this device")
             return
         }
-
         mtkView.device = defaultDevice
 
         guard let newRenderer = Renderer(metalKitView: mtkView) else {
             print("Renderer cannot be initialized")
             return
         }
-
         renderer = newRenderer
-
         renderer.mtkView(mtkView, drawableSizeWillChange: mtkView.drawableSize)
-
         mtkView.delegate = renderer
+    }
+    
+    @IBAction func saveImage(_ sender: NSMenuItem) {
+        var path = FileManager.default.homeDirectoryForCurrentUser
+        path.appendPathComponent("Desktop")
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "ja_JP")
+        dateFormatter.dateFormat = "yyyyMMdd'T'HHmmss"
+        print(dateFormatter.string(from: NSDate() as Date))
+        let filename = String(format: "RoseGold-%@-%.0f.png", dateFormatter.string(from: NSDate() as Date), renderer.nframe())
+        path.appendPathComponent(filename)
+        print("Dumping the image to \(filename) ...")
+        let texture = renderer.texture()
+        if let imageRef = texture.toImage() {
+            let image: NSImage = NSImage.init(cgImage: imageRef, size: NSSize.init(width: imageRef.width, height: imageRef.height))
+            do {
+                try image.tiffRepresentation?.write(to: path)
+            } catch {
+                print(error)
+            }
+        }
     }
 }

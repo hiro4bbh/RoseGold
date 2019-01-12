@@ -31,6 +31,7 @@ vertex RenderData vertexShader(uint vertexID [[vertex_id]],
     float2 position = vertices[vertexID].position;
     float2 viewportSize = float2(*viewportSizePointer);
     data.position.xy = position/(viewportSize/2.0);
+    data.position.y = -data.position.y;
     data.position.z = 0;
     data.position.w = 1.0;
     data.texCoord = vertices[vertexID].texCoord;
@@ -54,8 +55,8 @@ kernel void roseGoldKernel(constant Environment *env [[buffer(BufferIndexEnviron
         // Return early if the pixel is out of bounds
         return;
     }
-    float3 gamma = ray_trace(float2(gid.x, gid.y), env->timestamp);
-    gamma += pow(float3(outTexture.read(gid).xyz), float3(2.2))*env->nrun;
-    float4 color = float4(pow(clamp(gamma/(env->nrun + 1.0), 0.0, 1.0), float3(1.0/2.2)), 1.0);
+    float3 gamma = ray_trace(float2(gid.x, outTexture.get_height()-gid.y), env->timestamp);
+    gamma += pow(float3(outTexture.read(gid).xyz), float3(2.2))*env->nframe;
+    float4 color = float4(pow(clamp(gamma/(env->nframe + 1.0), 0.0, 1.0), float3(1.0/2.2)), 1.0);
     outTexture.write(half4(color), gid);
 }
