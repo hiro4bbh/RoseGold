@@ -28,7 +28,6 @@
 		455395A921E9A65000950C9E /* Header.metal in Sources */ = {isa = PBXBuildFile; fileRef = 455395A621E9A64F00950C9E /* Header.metal */; };
 		455395AA21E9A65000950C9E /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 455395A721E9A65000950C9E /* Shaders.metal */; };
 		455395AB21E9A65000950C9E /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 455395A721E9A65000950C9E /* Shaders.metal */; };
-		455395AD21EA150A00950C9E /* MTLTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455395AC21EA150A00950C9E /* MTLTexture.swift */; };
 		455395AE21EA150A00950C9E /* MTLTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455395AC21EA150A00950C9E /* MTLTexture.swift */; };
 /* End PBXBuildFile section */
 
@@ -92,7 +91,6 @@
 				4553959821E9A5D600950C9E /* Shaders.metal */,
 				4553959621E9A5D600950C9E /* ShaderTypes.h */,
 				4553955021E9A59A00950C9E /* Assets.xcassets */,
-				455395AC21EA150A00950C9E /* MTLTexture.swift */,
 			);
 			path = "RoseGold Shared";
 			sourceTree = "<group>";
@@ -121,6 +119,7 @@
 		4553957621E9A59A00950C9E /* RoseGold macOS */ = {
 			isa = PBXGroup;
 			children = (
+				455395AC21EA150A00950C9E /* MTLTexture.swift */,
 				4553957721E9A59A00950C9E /* AppDelegate.swift */,
 				4553957921E9A59A00950C9E /* GameViewController.swift */,
 				4553957B21E9A59A00950C9E /* Main.storyboard */,
@@ -256,7 +255,6 @@
 				455395A121E9A62300950C9E /* loki.metal in Sources */,
 				4553959921E9A5D600950C9E /* Renderer.swift in Sources */,
 				4553955921E9A59A00950C9E /* AppDelegate.swift in Sources */,
-				455395AD21EA150A00950C9E /* MTLTexture.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
