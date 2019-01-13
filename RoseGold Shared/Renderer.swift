@@ -26,12 +26,45 @@ class Renderer: NSObject, MTKViewDelegate {
     var viewportSize: uint2
     var environmentBuffer: MTLBuffer
     var environment: UnsafeMutablePointer<Environment>
-    let startTime: TimeInterval
-    var lastReportTime: TimeInterval
-    var lastReportNframe: Float
     var outputTexture: MTLTexture
     let threadGroupSize: MTLSize
     let threadGroupCount: MTLSize
+
+    let firstCameraDirection: float2
+    let firstCameraPosition: float3
+    var lastReportNframe: Float
+    var lastReportTime: TimeInterval
+    let startTime: TimeInterval
+
+    var cameraDirection: float2 {
+        get {
+            return environment[0].cameraDirection
+        }
+        set(dir) {
+            environment[0].cameraDirection = dir
+        }
+    }
+    var cameraPosition: float3 {
+        get {
+            return environment[0].cameraPosition
+        }
+        set(pos) {
+            environment[0].cameraPosition = pos
+        }
+    }
+    var nframe: Float {
+        get {
+            return environment[0].nframe
+        }
+        set(n) {
+            environment[0].nframe = n
+        }
+    }
+    var texture: MTLTexture {
+        get {
+            return outputTexture
+        }
+    }
 
     init?(metalKitView: MTKView) {
         metalKitView.depthStencilPixelFormat = MTLPixelFormat.depth32Float_stencil8
@@ -62,9 +95,6 @@ class Renderer: NSObject, MTKViewDelegate {
         environmentBuffer = device.makeBuffer(length: MemoryLayout<Environment>.size, options: MTLResourceOptions.init(rawValue: 0))!
         environmentBuffer.label = "Environment Buffer"
         environment = UnsafeMutableRawPointer(environmentBuffer.contents()).bindMemory(to:Environment.self, capacity:1)
-        startTime = NSDate().timeIntervalSince1970
-        lastReportTime = startTime
-        lastReportNframe = 0
 
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: MTLPixelFormat.bgra8Unorm, width: 1024, height: 1024, mipmapped: false)
         textureDescriptor.usage = MTLTextureUsage.init(rawValue: MTLTextureUsage.shaderRead.rawValue|MTLTextureUsage.shaderWrite.rawValue)
@@ -78,9 +108,18 @@ class Renderer: NSObject, MTKViewDelegate {
         threadGroupCount = MTLSize.init(width: (outputTexture.width  + threadGroupSize.width -  1)/threadGroupSize.width,
                                         height: (outputTexture.height + threadGroupSize.height - 1)/threadGroupSize.height,
                                         depth: 1)
-        
+
+        startTime = NSDate().timeIntervalSince1970
+        lastReportTime = startTime
+        lastReportNframe = 0.0
+        firstCameraPosition = float3(50.0, 40.8, 150.0)
+        firstCameraDirection = float2(0.0, 0.0)
+
         super.init()
 
+        nframe = 0.0
+        cameraPosition = firstCameraPosition
+        cameraDirection = firstCameraDirection
     }
 
     class func buildMetalVertexDescriptor() -> MTLVertexDescriptor {
@@ -146,7 +185,7 @@ class Renderer: NSObject, MTKViewDelegate {
         ];
         /// Per frame updates hare
         _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
-        environment[0].nframe += 1;
+        environment[0].nframe += 1.0;
         environment[0].timestamp = Float(NSDate().timeIntervalSince1970 - startTime)
 
         if let commandBuffer = commandQueue.makeCommandBuffer() {
@@ -157,9 +196,9 @@ class Renderer: NSObject, MTKViewDelegate {
                     let dtime = now - self.lastReportTime
                     if dtime >= 1.0 {
                         let dnframe = self.environment[0].nframe - self.lastReportNframe
-                        print(String(format: "ts=%.3f: %.1f fps (total %.f frames)", self.environment[0].timestamp, dnframe/Float(dtime), self.nframe()))
+                        print(String(format: "ts=%.3f: %.1f fps (total %.f frames)", self.environment[0].timestamp, dnframe/Float(dtime), self.nframe))
                         self.lastReportTime = now
-                        self.lastReportNframe = self.environment[0].nframe
+                        self.lastReportNframe = self.nframe
                     }
                 }
                 semaphore.signal()
@@ -208,10 +247,23 @@ class Renderer: NSObject, MTKViewDelegate {
         viewportSize.y = UInt32(size.height)
     }
     
-    func nframe() -> Float {
-        return environment[0].nframe
+    func moveCameraToward(delta: float3) {
+        if (cos(cameraDirection.x) > 0) {
+            cameraPosition += float3(delta.x, delta.y, -delta.z)
+        } else {
+            cameraPosition += float3(delta.x, delta.y, delta.z)
+        }
+        print("Moved camera at \(cameraPosition)")
+        resetTexture()
     }
-    func texture() -> MTLTexture {
-        return outputTexture
+    func turnCameraToward(delta: float2) {
+        cameraDirection += delta
+        print("Turned camera direction at \(cameraDirection)")
+        resetTexture()
+    }
+    func resetTexture() {
+        nframe = 0.0
+        lastReportNframe = 0.0
+        print("Reset texture")
     }
 }

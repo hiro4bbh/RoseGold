@@ -11,5 +11,5 @@ using namespace metal;
 
 #ifndef SmallPT_Header_metal
 #define SmallPT_Header_metal
-float3 ray_trace(float2 position, float randseed);
+float3 ray_trace(float2 position, float3 camPos, float2 camDir, float randseed);
 #endif

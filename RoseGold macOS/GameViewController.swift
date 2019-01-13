@@ -36,6 +36,15 @@ class GameViewController: NSViewController {
         mtkView.delegate = renderer
     }
     
+    @IBAction func resetImage(_ sender: NSMenuItem) {
+        renderer.resetTexture()
+    }
+    @IBAction func turnCameraLeft(_ sender: NSMenuItem) {
+        renderer.turnCameraToward(delta: float2(-Float.pi/8.0, 0.0))
+    }
+    @IBAction func turnCameraRight(_ sender: NSMenuItem) {
+        renderer.turnCameraToward(delta: float2(Float.pi/8.0, 0.0))
+    }
     @IBAction func saveImage(_ sender: NSMenuItem) {
         var path = FileManager.default.homeDirectoryForCurrentUser
         path.appendPathComponent("Desktop")
@@ -43,10 +52,10 @@ class GameViewController: NSViewController {
         dateFormatter.locale = Locale(identifier: "ja_JP")
         dateFormatter.dateFormat = "yyyyMMdd'T'HHmmss"
         print(dateFormatter.string(from: NSDate() as Date))
-        let filename = String(format: "RoseGold-%@-%.0f.png", dateFormatter.string(from: NSDate() as Date), renderer.nframe())
+        let filename = String(format: "RoseGold-%@-%.0f.png", dateFormatter.string(from: NSDate() as Date), renderer.nframe)
         path.appendPathComponent(filename)
-        print("Dumping the image to \(filename) ...")
-        let texture = renderer.texture()
+        print("Dumping current image to \(filename) ...")
+        let texture = renderer.texture
         if let imageRef = texture.toImage() {
             let image: NSImage = NSImage.init(cgImage: imageRef, size: NSSize.init(width: imageRef.width, height: imageRef.height))
             do {
@@ -55,5 +64,11 @@ class GameViewController: NSViewController {
                 print(error)
             }
         }
+    }
+    @IBAction func stepCameraBackward(_ sender: NSMenuItem) {
+        renderer.moveCameraToward(delta: float3(0.0, 0.0, -5.0))
+    }
+    @IBAction func stepCameraToward(_ sender: NSMenuItem) {
+        renderer.moveCameraToward(delta: float3(0.0, 0.0, 5.0))
     }
 }

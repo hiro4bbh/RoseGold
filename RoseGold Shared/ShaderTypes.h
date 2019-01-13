@@ -45,8 +45,10 @@ typedef struct {
 } Vertex;
 
 typedef struct {
-    float nframe;
-    float timestamp;
+    float         nframe;
+    float         timestamp;
+    vector_float3 cameraPosition;
+    vector_float2 cameraDirection;
 } Environment;
 
 #endif /* ShaderTypes_h */

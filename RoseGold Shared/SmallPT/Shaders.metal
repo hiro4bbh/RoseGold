@@ -16,9 +16,8 @@ using namespace metal;
 #define HEIGHT 1024
 
 #define NSAMPLE  1
-#define MAXDEPTH 8
-constant float EPS_F = 1e-3;
-constant float DMAX_F = 1e+5;
+constant float EPS_F = 1e-8;
+constant float DMAX_F = 1e+8;
 
 enum class Refl {
     Diff, Spec, Refr
@@ -80,8 +79,8 @@ constant Sphere spheres[NSPHERE] = {
     {  1e5, float3(50.0,       -1e5,      81.6),       float3(0.0), float3(0.75, 0.75, 0.75), Refl::Diff},
     {  1e5, float3(50.0,        1e5+81.6, 81.6),       float3(0.0), float3(0.75, 0.75, 0.75), Refl::Diff},
     { 16.5, float3(27.0,       16.5,      47.0),       float3(0.0), float3(1.00, 1.00, 1.00), Refl::Spec},
-    { 16.5, float3(73.0,       16.5,      78.0),       float3(0.0), float3(0.70, 1.00, 0.90), Refl::Refr},
-    {600.0, float3(50.0,      681.33,     81.6),       float3(1.0), float3(0.00, 0.00, 0.00), Refl::Diff}
+    { 16.5, float3(73.0,       16.5,      78.0),       float3(0.0), float3(1.00, 1.00, 1.00), Refl::Refr},
+    {600.0, float3(50.0,      681.33,     81.6),       float3(4.0), float3(0.00, 0.00, 0.00), Refl::Diff}
 };
 
 IntersectResult intersect(Ray r, int avoid) {
@@ -110,7 +109,7 @@ float3 radiance(Ray ray, Loki loki) {
     float3 acc = float3(0.0);
     float3 mask = float3(1.0);
     int id = -1;
-    for (int depth = 0; depth < MAXDEPTH; ++depth) {
+    for (int depth = 0; ; ++depth) {
         IntersectResult iray = intersect(ray, id);
         float t = iray.t;
         Sphere obj = iray.s;
@@ -120,16 +119,25 @@ float3 radiance(Ray ray, Loki loki) {
         }
         float3 x = t*ray.d + ray.o;
         float3 n = normalize(x - obj.p), nl = n*sign(-dot(n, ray.d));
-
+        // Russian Roulette.
+        float3 f = obj.c;
+        float p = (f.x > f.y && f.x > f.z) ? f.x : (f.y > f.z ? f.y : f.z);
+        if (depth >= 5) {
+            if (loki.rand() >= p) {
+                break;
+            }
+            f = f/p;
+        }
+        // Calculate the material.
         if (obj.refl == Refl::Diff) {
             float r = loki.rand();
             float3 d = jitter(nl, 2.0*M_PI_F*loki.rand(), sqrt(r), sqrt(1.0 - r));
             acc += mask*obj.e;
-            mask *= obj.c;
+            mask *= f;
             ray = Ray(x, d);
         } else if (obj.refl == Refl::Spec) {
             acc += mask*obj.e;
-            mask *= obj.c;
+            mask *= f;
             ray = Ray(x, reflect(ray.d, n));
         } else {
             float a = dot(n, ray.d), ddn = abs(a);
@@ -145,7 +153,7 @@ float3 radiance(Ray ray, Loki loki) {
                 if (loki.rand() < P) {
                     mask *= RP;
                 } else {
-                    mask *= obj.c*TP;
+                    mask *= f*TP;
                     ray = Ray(x, tdir);
                 }
             }
@@ -154,18 +162,18 @@ float3 radiance(Ray ray, Loki loki) {
     return acc;
 }
 
-float3 ray_trace(float2 position, float seed) {
+float3 ray_trace(float2 position, float3 camPos, float2 camDir, float seed) {
     float2 uv = 2.0*position/float2(WIDTH, HEIGHT) - 1.0;
     float2 iResolution(WIDTH, HEIGHT);
-    float3 camPos = float3(50.0, 40.8, 150.0);
-    float3 cz = normalize(float3(50.0, 40.0, 81.6) - camPos);
-    float3 cx = float3(1.0, 0.0, 0.0);
-    float3 cy = normalize(cross(cx, cz));
-    cx = cross(cz, cy);
     float3 color = float3(0.0);
     Loki loki(position.x, position.y, seed);
     for (int i = 0; i < NSAMPLE; ++i) {
-        color += radiance(Ray(camPos, normalize((iResolution.x/iResolution.y*uv.x * cx + uv.y * cy) + cz)), loki);
+        float3 samPos = camPos - 0.5 + 0.5*float3(loki.rand(), loki.rand(), loki.rand());
+        float3 cz = float3(cos(camDir.y)*sin(camDir.x), sin(camDir.y), -cos(camDir.y)*cos(camDir.x));
+        float3 cx = normalize(float3(cos(camDir.x), 0.0, 0.0));
+        float3 cy = cross(cx, cz);
+        cx = cross(cz, cy);
+        color += radiance(Ray(samPos, normalize((iResolution.x/iResolution.y*uv.x * cx + uv.y * cy) + cz)), loki);
     }
     return color/float(NSAMPLE);
 }

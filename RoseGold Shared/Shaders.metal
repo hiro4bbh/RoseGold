@@ -55,8 +55,9 @@ kernel void roseGoldKernel(constant Environment *env [[buffer(BufferIndexEnviron
         // Return early if the pixel is out of bounds
         return;
     }
-    float3 gamma = ray_trace(float2(gid.x, outTexture.get_height()-gid.y), env->timestamp);
-    gamma += pow(float3(outTexture.read(gid).xyz), float3(2.2))*env->nframe;
-    float4 color = float4(pow(clamp(gamma/(env->nframe + 1.0), 0.0, 1.0), float3(1.0/2.2)), 1.0);
+    float3 gamma = ray_trace(float2(gid.x, outTexture.get_height() - gid.y), env->cameraPosition, env->cameraDirection, env->nframe);
+    gamma /= env->nframe;
+    gamma += pow(float3(outTexture.read(gid).xyz), float3(2.2))*((env->nframe - 1)/env->nframe);
+    float4 color = float4(pow(clamp(gamma, 0.0, 1.0), float3(1.0/2.2)), 1.0);
     outTexture.write(half4(color), gid);
 }

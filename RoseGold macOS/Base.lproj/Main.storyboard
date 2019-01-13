@@ -67,6 +67,45 @@
                                     </items>
                                 </menu>
                             </menuItem>
+                            <menuItem title="View" id="WoQ-x0-PPe" propertyAccessControl="none">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="View" id="Hro-p1-HwP">
+                                    <items>
+                                        <menuItem title="Reset Image" keyEquivalent="r" id="ZbI-j2-T9u">
+                                            <connections>
+                                                <action selector="resetImage:" target="Ady-hI-5gd" id="vGr-8y-0eC"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="Wmx-hn-cWK"/>
+                                        <menuItem title="Step Camera Toward" keyEquivalent="" id="4Hi-wD-e3j">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="stepCameraToward:" target="Ady-hI-5gd" id="LkO-YC-Lcl"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Step Camera Backward" keyEquivalent="" id="1BY-Dt-4Z5">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="stepCameraBackward:" target="Ady-hI-5gd" id="YJN-eE-cO6"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="kVD-8V-VmP"/>
+                                        <menuItem title="Turn Camera Left" keyEquivalent="" id="JgR-lY-5o8">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="turnCameraLeft:" target="Ady-hI-5gd" id="k8l-FS-kH7"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Turn Camera Right" keyEquivalent="" id="TrK-Wh-9oz">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="turnCameraRight:" target="Ady-hI-5gd" id="9lq-D8-WKM"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="PzE-jK-uJF"/>
+                                    </items>
+                                </menu>
+                            </menuItem>
                             <menuItem title="Help" id="wpr-3q-Mcd">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
