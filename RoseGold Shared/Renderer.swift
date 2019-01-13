@@ -17,7 +17,6 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     var computePipelineState: MTLComputePipelineState
     var renderPipelineState: MTLRenderPipelineState
-    var depthState: MTLDepthStencilState
 
     let inFlightSemaphore = DispatchSemaphore(value: 1)
     
@@ -28,51 +27,19 @@ class Renderer: NSObject, MTKViewDelegate {
     let threadGroupSize: MTLSize
     let threadGroupCount: MTLSize
 
-    let firstCameraDirection: float2
     let firstCameraPosition: float3
+    let firstCameraDirection: float2
+    var cameraPosition: float3
+    var cameraPositionVelocity: float3!
+    var cameraDirection: float2
+    var cameraDirectionVelocity: float2!
+
     var lastReportNframe: Float
+    var nframe: Float
     var lastReportTime: TimeInterval
     let startTime: TimeInterval
 
-    var cameraDirection: float2 {
-        get {
-            return environment[0].cameraDirection
-        }
-        set(dir) {
-            if (dir.y > 0.4*Float.pi) {
-                environment[0].cameraDirection = float2(dir.x, 0.4*Float.pi)
-            } else if (dir.y < -0.4*Float.pi) {
-                environment[0].cameraDirection = float2(dir.x, -0.4*Float.pi)
-            } else {
-                environment[0].cameraDirection = dir
-            }
-        }
-    }
-    var cameraPosition: float3 {
-        get {
-            return environment[0].cameraPosition
-        }
-        set(pos) {
-            environment[0].cameraPosition = pos
-        }
-    }
-    var nframe: Float {
-        get {
-            return environment[0].nframe
-        }
-        set(n) {
-            environment[0].nframe = n
-        }
-    }
-    var texture: MTLTexture {
-        get {
-            return outputTexture
-        }
-    }
-
     init?(metalKitView: MTKView) {
-        metalKitView.depthStencilPixelFormat = MTLPixelFormat.depth32Float_stencil8
-        metalKitView.sampleCount = 1
         device = metalKitView.device!
         commandQueue = device.makeCommandQueue()!
         do {
@@ -81,19 +48,12 @@ class Renderer: NSObject, MTKViewDelegate {
             print("Unable to compile compute pipeline state.  Error info: \(error)")
             return nil
         }
-        let mtlVertexDescriptor = Renderer.buildMetalVertexDescriptor()
         do {
-            renderPipelineState = try Renderer.buildRenderPipelineWithDevice(device: device,
-                                                                            metalKitView: metalKitView,
-                                                                            mtlVertexDescriptor: mtlVertexDescriptor)
+            renderPipelineState = try Renderer.buildRenderPipelineWithDevice(device: device, metalKitView: metalKitView)
         } catch {
             print("Unable to compile render pipeline state.  Error info: \(error)")
             return nil
         }
-        let depthStateDesciptor = MTLDepthStencilDescriptor()
-        depthStateDesciptor.depthCompareFunction = MTLCompareFunction.less
-        depthStateDesciptor.isDepthWriteEnabled = true
-        depthState = device.makeDepthStencilState(descriptor: depthStateDesciptor)!
 
         viewportSize = uint2(0, 0)
         environmentBuffer = device.makeBuffer(length: MemoryLayout<Environment>.size, options: MTLResourceOptions.init(rawValue: 0))!
@@ -116,36 +76,13 @@ class Renderer: NSObject, MTKViewDelegate {
         startTime = NSDate().timeIntervalSince1970
         lastReportTime = startTime
         lastReportNframe = 0.0
+        nframe = 0.0
         firstCameraPosition = float3(50.0, 40.8, 150.0)
         firstCameraDirection = float2(0.0, 0.0)
-
-        super.init()
-
-        nframe = 0.0
         cameraPosition = firstCameraPosition
         cameraDirection = firstCameraDirection
-    }
 
-    class func buildMetalVertexDescriptor() -> MTLVertexDescriptor {
-        let mtlVertexDescriptor = MTLVertexDescriptor()
-
-        mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].format = MTLVertexFormat.float2
-        mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].offset = 0
-        mtlVertexDescriptor.attributes[VertexAttribute.position.rawValue].bufferIndex = BufferIndex.vertices.rawValue
-
-        mtlVertexDescriptor.attributes[VertexAttribute.texcoord.rawValue].format = MTLVertexFormat.float2
-        mtlVertexDescriptor.attributes[VertexAttribute.texcoord.rawValue].offset = 0
-        mtlVertexDescriptor.attributes[VertexAttribute.texcoord.rawValue].bufferIndex = BufferIndex.viewpointSize.rawValue
-
-        mtlVertexDescriptor.layouts[BufferIndex.vertices.rawValue].stride = 8
-        mtlVertexDescriptor.layouts[BufferIndex.vertices.rawValue].stepRate = 1
-        mtlVertexDescriptor.layouts[BufferIndex.vertices.rawValue].stepFunction = MTLVertexStepFunction.perVertex
-
-        mtlVertexDescriptor.layouts[BufferIndex.viewpointSize.rawValue].stride = 8
-        mtlVertexDescriptor.layouts[BufferIndex.viewpointSize.rawValue].stepRate = 1
-        mtlVertexDescriptor.layouts[BufferIndex.viewpointSize.rawValue].stepFunction = MTLVertexStepFunction.perVertex
-
-        return mtlVertexDescriptor
+        super.init()
     }
 
     class func buildComputePipelineWithDevice(device: MTLDevice) throws -> MTLComputePipelineState {
@@ -155,8 +92,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
 
     class func buildRenderPipelineWithDevice(device: MTLDevice,
-                                             metalKitView: MTKView,
-                                             mtlVertexDescriptor: MTLVertexDescriptor) throws -> MTLRenderPipelineState {
+                                             metalKitView: MTKView) throws -> MTLRenderPipelineState {
         /// Build a render state pipeline object
         let library = device.makeDefaultLibrary()!
         let vertexFunction = library.makeFunction(name: "vertexShader")
@@ -164,18 +100,19 @@ class Renderer: NSObject, MTKViewDelegate {
 
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.label = "RenderPipeline"
-        pipelineDescriptor.sampleCount = metalKitView.sampleCount
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.vertexDescriptor = mtlVertexDescriptor
         pipelineDescriptor.colorAttachments[0].pixelFormat = metalKitView.colorPixelFormat
-        pipelineDescriptor.depthAttachmentPixelFormat = metalKitView.depthStencilPixelFormat
-        pipelineDescriptor.stencilAttachmentPixelFormat = metalKitView.depthStencilPixelFormat
 
         return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
     }
 
     func draw(in view: MTKView) {
+        /// Per frame updates here
+        let waitResult = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        if waitResult != DispatchTimeoutResult.success {
+            return
+        }
         let halfSize = Float(viewportSize.min()!)/2.0;
         let quadVertices: Array<Vertex> = [
             /// Pixel Positions, Texture Coordinates
@@ -186,14 +123,14 @@ class Renderer: NSObject, MTKViewDelegate {
             Vertex(position: float2( halfSize, -halfSize), texCoord: float2(1.0, 0.0)),
             Vertex(position: float2(-halfSize,  halfSize), texCoord: float2(0.0, 1.0)),
             Vertex(position: float2( halfSize,  halfSize), texCoord: float2(1.0, 1.0)),
-        ];
-        /// Per frame updates hare
-        let waitResult = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
-        if waitResult != DispatchTimeoutResult.success {
-            return
-        }
-        environment[0].nframe += 1.0;
+            ];
+        stepCameraToward()
+        turnCameraToward()
+        nframe += 1.0
+        environment[0].nframe = nframe
         environment[0].timestamp = Float(NSDate().timeIntervalSince1970 - startTime)
+        environment[0].cameraPosition = cameraPosition
+        environment[0].cameraDirection = cameraDirection
 
         if let commandBuffer = commandQueue.makeCommandBuffer() {
             let semaphore = inFlightSemaphore
@@ -237,7 +174,6 @@ class Renderer: NSObject, MTKViewDelegate {
                     renderEncoder.popDebugGroup()
 
                     renderEncoder.endEncoding()
-                    
                     if let drawable = view.currentDrawable {
                         commandBuffer.present(drawable)
                     }
@@ -253,20 +189,38 @@ class Renderer: NSObject, MTKViewDelegate {
         viewportSize.x = UInt32(size.width)
         viewportSize.y = UInt32(size.height)
     }
-    
-    func moveCameraToward(delta: float2) {
-        cameraPosition += float3(delta.x*cos(cameraDirection.x) + delta.y*sin(cameraDirection.x), 0.0, delta.x*sin(cameraDirection.x) - delta.y*cos(cameraDirection.x))
-        print("Moved camera at \(cameraPosition)")
-        resetTexture()
+
+    func accelCamera(_ delta: float2? = nil) {
+        if let delta = delta {
+            cameraPositionVelocity = float3(delta.x*cos(cameraDirection.x) + delta.y*sin(cameraDirection.x), 0.0, delta.x*sin(cameraDirection.x) - delta.y*cos(cameraDirection.x))
+        } else {
+            stepCameraToward()
+            cameraPositionVelocity = nil
+        }
     }
-    func turnCameraToward(delta: float2) {
-        cameraDirection += delta
-        print("Turned camera direction at \(cameraDirection)")
-        resetTexture()
+    func accelCameraDirection(_ delta: float2? = nil) {
+        if let delta = delta {
+            cameraDirectionVelocity = delta
+            resetTexture()
+        } else {
+            turnCameraToward()
+            cameraDirectionVelocity = nil
+        }
     }
     func resetTexture() {
         nframe = 0.0
         lastReportNframe = 0.0
-        print("Reset texture")
+    }
+    func stepCameraToward() {
+        if let cameraPositionVelocity = cameraPositionVelocity {
+            cameraPosition += cameraPositionVelocity
+            resetTexture()
+        }
+    }
+    func turnCameraToward() {
+        if let cameraDirectionVelocity = cameraDirectionVelocity {
+            cameraDirection += cameraDirectionVelocity
+            resetTexture()
+        }
     }
 }

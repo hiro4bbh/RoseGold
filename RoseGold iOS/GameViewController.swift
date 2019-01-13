@@ -15,7 +15,6 @@ class GameViewController: UIViewController {
     var mtkView: MTKView!
     @IBOutlet var joystickView: JoystickView!
     private var joystick: float2!
-    private var joystickTimer: Timer!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,15 +41,9 @@ class GameViewController: UIViewController {
         
         let joystickMonitor: JoyStickViewMonitor = { x, y in
             if x == nil || y == nil {
-                self.joystickTimer?.invalidate()
-                self.joystickTimer = nil
+                self.renderer.accelCamera()
             } else {
-                self.joystick = 5.0*float2(Float(x!), -Float(y!))
-                if self.joystickTimer == nil {
-                    self.joystickTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
-                        self.renderer.moveCameraToward(delta: self.joystick)
-                    }
-                }
+                self.renderer.accelCamera(5.0*float2(Float(x!), -Float(y!)))
             }
         }
         joystickView.monitor = joystickMonitor
@@ -67,7 +60,8 @@ class GameViewController: UIViewController {
             let touchY0 = touch.previousLocation(in: mtkView).y
             let angleX = (touchX - touchX0)*UIScreen.main.scale/UIScreen.main.bounds.width
             let angleY = (touchY - touchY0)*UIScreen.main.scale/UIScreen.main.bounds.height*0.25
-            renderer.turnCameraToward(delta: float2(Float(angleX), -Float(angleY))*Float.pi)
+            renderer.accelCameraDirection(float2(Float(angleX), -Float(angleY))*Float.pi)
+            renderer.accelCameraDirection()
         }
     }
 }

@@ -41,16 +41,20 @@ class GameViewController: NSViewController {
         renderer.resetTexture()
     }
     @IBAction func turnCameraDown(_ sender: NSMenuItem) {
-        renderer.turnCameraToward(delta: float2(0.0, -0.1*Float.pi))
+        renderer.accelCameraDirection(float2(0.0, -0.1*Float.pi))
+        renderer.accelCameraDirection()
     }
     @IBAction func turnCameraLeft(_ sender: NSMenuItem) {
-        renderer.turnCameraToward(delta: float2(-0.1*Float.pi, 0.0))
+        renderer.accelCameraDirection(float2(-0.1*Float.pi, 0.0))
+        renderer.accelCameraDirection()
     }
     @IBAction func turnCameraRight(_ sender: NSMenuItem) {
-        renderer.turnCameraToward(delta: float2(0.1*Float.pi, 0.0))
+        renderer.accelCameraDirection(float2(0.1*Float.pi, 0.0))
+        renderer.accelCameraDirection()
     }
     @IBAction func turnCameraUp(_ sender: NSMenuItem) {
-        renderer.turnCameraToward(delta: float2(0.0, 0.1*Float.pi))
+        renderer.accelCameraDirection(float2(0.0, 0.1*Float.pi))
+        renderer.accelCameraDirection()
     }
     @IBAction func saveImage(_ sender: NSMenuItem) {
         var path = FileManager.default.homeDirectoryForCurrentUser
@@ -62,7 +66,7 @@ class GameViewController: NSViewController {
         let filename = String(format: "RoseGold-%@-%.0f.png", dateFormatter.string(from: NSDate() as Date), renderer.nframe)
         path.appendPathComponent(filename)
         print("Dumping current image to \(filename) ...")
-        let texture = renderer.texture
+        let texture = renderer.outputTexture
         if let imageRef = texture.toImage() {
             let image: NSImage = NSImage.init(cgImage: imageRef, size: NSSize.init(width: imageRef.width, height: imageRef.height))
             do {
@@ -73,15 +77,19 @@ class GameViewController: NSViewController {
         }
     }
     @IBAction func stepCameraBackward(_ sender: NSMenuItem) {
-        renderer.moveCameraToward(delta: float2(0.0, -5.0))
+        renderer.accelCamera(float2(0.0, -5.0))
+        renderer.accelCamera()
     }
     @IBAction func stepCameraLeft(_ sender: NSMenuItem) {
-        renderer.moveCameraToward(delta: float2(-5.0, 0.0))
+        renderer.accelCamera(float2(-5.0, 0.0))
+        renderer.accelCamera()
     }
     @IBAction func stepCameraRight(_ sender: NSMenuItem) {
-        renderer.moveCameraToward(delta: float2(5.0, 0.0))
+        renderer.accelCamera(float2(5.0, 0.0))
+        renderer.accelCamera()
     }
     @IBAction func stepCameraToward(_ sender: NSMenuItem) {
-        renderer.moveCameraToward(delta: float2(0.0, 5.0))
+        renderer.accelCamera(float2(0.0, 5.0))
+        renderer.accelCamera()
     }
 }

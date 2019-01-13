@@ -47,17 +47,17 @@ fragment float4 fragmentShader(RenderData data [[stage_in]],
 }
 
 kernel void roseGoldKernel(constant Environment *env [[buffer(BufferIndexEnvironment)]],
-                           texture2d<half, access::read_write> outTexture [[texture(TextureIndexOutput)]],
+                           texture2d<half, access::read_write> output [[texture(TextureIndexOutput)]],
                            uint2 gid [[thread_position_in_grid]])
 {
     // Check if the pixel is within the bounds of the output texture
-    if ((gid.x >= outTexture.get_width()) || (gid.y >= outTexture.get_height())) {
+    if ((gid.x >= output.get_width()) || (gid.y >= output.get_height())) {
         // Return early if the pixel is out of bounds
         return;
     }
-    float3 gamma = ray_trace(float2(gid.x, outTexture.get_height() - gid.y), env->cameraPosition, env->cameraDirection, env->nframe);
+    float3 gamma = ray_trace(float2(gid.x, output.get_height() - gid.y), env->cameraPosition, env->cameraDirection, env->nframe);
     gamma /= env->nframe;
-    gamma += pow(float3(outTexture.read(gid).xyz), float3(2.2))*((env->nframe - 1)/env->nframe);
+    gamma += pow(float3(output.read(gid).xyz), float3(2.2))*((env->nframe - 1)/env->nframe);
     float4 color = float4(pow(clamp(gamma, 0.0, 1.0), float3(1.0/2.2)), 1.0);
-    outTexture.write(half4(color), gid);
+    output.write(half4(color), gid);
 }

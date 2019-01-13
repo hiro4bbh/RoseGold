@@ -27,14 +27,8 @@ typedef NS_ENUM(NSInteger, BufferIndex) {
     BufferIndexEnvironment   = 2,
 };
 
-typedef NS_ENUM(NSInteger, VertexAttribute) {
-    VertexAttributePosition = 0,
-    VertexAttributeTexcoord = 1,
-};
-
 typedef NS_ENUM(NSInteger, TextureIndex) {
-    TextureIndexInput = 0,
-    TextureIndexOutput = 1,
+    TextureIndexOutput = 0,
 };
 
 typedef struct {

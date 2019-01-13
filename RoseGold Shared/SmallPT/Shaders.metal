@@ -16,6 +16,7 @@ using namespace metal;
 #define HEIGHT 1024
 
 #define NSAMPLE  1
+#define MAXDEPTH 5
 constant float EPS_F = 1e-8;
 constant float DMAX_F = 1e+8;
 
@@ -109,7 +110,7 @@ float3 radiance(Ray ray, Loki loki) {
     float3 acc = float3(0.0);
     float3 mask = float3(1.0);
     int id = -1;
-    for (int depth = 0; ; ++depth) {
+    for (int depth = 0; depth < MAXDEPTH; ++depth) {
         IntersectResult iray = intersect(ray, id);
         float t = iray.t;
         Sphere obj = iray.s;
@@ -121,6 +122,7 @@ float3 radiance(Ray ray, Loki loki) {
         float3 n = normalize(x - obj.p), nl = n*sign(-dot(n, ray.d));
         // Russian Roulette.
         float3 f = obj.c;
+        /* FIXME: Avoid Infinite Loop
         float p = (f.x > f.y && f.x > f.z) ? f.x : (f.y > f.z ? f.y : f.z);
         if (depth >= 5) {
             if (loki.rand() >= p) {
@@ -128,6 +130,7 @@ float3 radiance(Ray ray, Loki loki) {
             }
             f = f/p;
         }
+        */
         // Calculate the material.
         if (obj.refl == Refl::Diff) {
             float r = loki.rand();
