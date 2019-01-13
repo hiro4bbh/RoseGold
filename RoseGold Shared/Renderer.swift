@@ -12,8 +12,6 @@ import Metal
 import MetalKit
 import simd
 
-let maxBuffersInFlight = 3
-
 class Renderer: NSObject, MTKViewDelegate {
     public let device: MTLDevice
     let commandQueue: MTLCommandQueue
@@ -21,7 +19,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var renderPipelineState: MTLRenderPipelineState
     var depthState: MTLDepthStencilState
 
-    let inFlightSemaphore = DispatchSemaphore(value: maxBuffersInFlight)
+    let inFlightSemaphore = DispatchSemaphore(value: 1)
     
     var viewportSize: uint2
     var environmentBuffer: MTLBuffer
@@ -41,7 +39,13 @@ class Renderer: NSObject, MTKViewDelegate {
             return environment[0].cameraDirection
         }
         set(dir) {
-            environment[0].cameraDirection = dir
+            if (dir.y > 0.4*Float.pi) {
+                environment[0].cameraDirection = float2(dir.x, 0.4*Float.pi)
+            } else if (dir.y < -0.4*Float.pi) {
+                environment[0].cameraDirection = float2(dir.x, -0.4*Float.pi)
+            } else {
+                environment[0].cameraDirection = dir
+            }
         }
     }
     var cameraPosition: float3 {
@@ -184,7 +188,10 @@ class Renderer: NSObject, MTKViewDelegate {
             Vertex(position: float2( halfSize,  halfSize), texCoord: float2(1.0, 1.0)),
         ];
         /// Per frame updates hare
-        _ = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        let waitResult = inFlightSemaphore.wait(timeout: DispatchTime.distantFuture)
+        if waitResult != DispatchTimeoutResult.success {
+            return
+        }
         environment[0].nframe += 1.0;
         environment[0].timestamp = Float(NSDate().timeIntervalSince1970 - startTime)
 
@@ -203,7 +210,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
                 semaphore.signal()
             }
-            
+
             // Run the compute shader.
             if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
                 computeEncoder.setComputePipelineState(computePipelineState)
@@ -222,7 +229,7 @@ class Renderer: NSObject, MTKViewDelegate {
 
                     renderEncoder.pushDebugGroup("Draw Box")
                     renderEncoder.setRenderPipelineState(renderPipelineState)
-                    renderEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(viewportSize.x), height: Double(viewportSize.y), znear: -1.0, zfar: 1.0))
+                    renderEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(viewportSize.x), height: Double(viewportSize.y), znear: 0.0, zfar: 1.0))
                     renderEncoder.setVertexBytes(quadVertices, length: quadVertices.count*MemoryLayout<Vertex>.size, index: BufferIndex.vertices.rawValue)
                     renderEncoder.setVertexBytes(&viewportSize, length: MemoryLayout<uint2>.size, index: BufferIndex.viewpointSize.rawValue)
                     renderEncoder.setFragmentTexture(outputTexture, index: TextureIndex.output.rawValue)
@@ -247,12 +254,8 @@ class Renderer: NSObject, MTKViewDelegate {
         viewportSize.y = UInt32(size.height)
     }
     
-    func moveCameraToward(delta: float3) {
-        if (cos(cameraDirection.x) > 0) {
-            cameraPosition += float3(delta.x, delta.y, -delta.z)
-        } else {
-            cameraPosition += float3(delta.x, delta.y, delta.z)
-        }
+    func moveCameraToward(delta: float2) {
+        cameraPosition += float3(delta.x*cos(cameraDirection.x) + delta.y*sin(cameraDirection.x), 0.0, delta.x*sin(cameraDirection.x) - delta.y*cos(cameraDirection.x))
         print("Moved camera at \(cameraPosition)")
         resetTexture()
     }

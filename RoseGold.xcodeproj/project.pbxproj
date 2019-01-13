@@ -29,6 +29,7 @@
 		455395AA21E9A65000950C9E /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 455395A721E9A65000950C9E /* Shaders.metal */; };
 		455395AB21E9A65000950C9E /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 455395A721E9A65000950C9E /* Shaders.metal */; };
 		455395AE21EA150A00950C9E /* MTLTexture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455395AC21EA150A00950C9E /* MTLTexture.swift */; };
+		45DCAAE621EB42C20050482C /* JoyStickView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DCAAE521EB42C10050482C /* JoyStickView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		455395A621E9A64F00950C9E /* Header.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Header.metal; sourceTree = "<group>"; };
 		455395A721E9A65000950C9E /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		455395AC21EA150A00950C9E /* MTLTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTLTexture.swift; sourceTree = "<group>"; };
+		45DCAAE521EB42C10050482C /* JoyStickView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoyStickView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				4553955C21E9A59A00950C9E /* Main.storyboard */,
 				4553955F21E9A59A00950C9E /* LaunchScreen.storyboard */,
 				4553956221E9A59A00950C9E /* Info.plist */,
+				45DCAAE521EB42C10050482C /* JoyStickView.swift */,
 			);
 			path = "RoseGold iOS";
 			sourceTree = "<group>";
@@ -255,6 +258,7 @@
 				455395A121E9A62300950C9E /* loki.metal in Sources */,
 				4553959921E9A5D600950C9E /* Renderer.swift in Sources */,
 				4553955921E9A59A00950C9E /* AppDelegate.swift in Sources */,
+				45DCAAE621EB42C20050482C /* JoyStickView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

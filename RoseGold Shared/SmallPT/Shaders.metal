@@ -170,10 +170,10 @@ float3 ray_trace(float2 position, float3 camPos, float2 camDir, float seed) {
     for (int i = 0; i < NSAMPLE; ++i) {
         float3 samPos = camPos - 0.5 + 0.5*float3(loki.rand(), loki.rand(), loki.rand());
         float3 cz = float3(cos(camDir.y)*sin(camDir.x), sin(camDir.y), -cos(camDir.y)*cos(camDir.x));
-        float3 cx = normalize(float3(cos(camDir.x), 0.0, 0.0));
-        float3 cy = cross(cx, cz);
+        float3 cx = float3(sin(camDir.x + 0.5*M_PI_F), 0.0, -cos(camDir.x + 0.5*M_PI_F));
+        float3 cy = normalize(cross(cx, cz));
         cx = cross(cz, cy);
-        color += radiance(Ray(samPos, normalize((iResolution.x/iResolution.y*uv.x * cx + uv.y * cy) + cz)), loki);
+        color += radiance(Ray(samPos, normalize((iResolution.x/iResolution.y*uv.x*cx + uv.y*cy) + cz)), loki);
     }
     return color/float(NSAMPLE);
 }

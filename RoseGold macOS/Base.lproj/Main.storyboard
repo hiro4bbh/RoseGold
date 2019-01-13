@@ -83,23 +83,43 @@
                                                 <action selector="stepCameraToward:" target="Ady-hI-5gd" id="LkO-YC-Lcl"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Step Camera Right" keyEquivalent="" id="WFq-Lh-gCP">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="stepCameraRight:" target="Ady-hI-5gd" id="3Fi-aV-rjZ"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem title="Step Camera Backward" keyEquivalent="" id="1BY-Dt-4Z5">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="stepCameraBackward:" target="Ady-hI-5gd" id="YJN-eE-cO6"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem isSeparatorItem="YES" id="kVD-8V-VmP"/>
-                                        <menuItem title="Turn Camera Left" keyEquivalent="" id="JgR-lY-5o8">
+                                        <menuItem title="Step Camera Left" keyEquivalent="" id="dlu-v7-Huc">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
-                                                <action selector="turnCameraLeft:" target="Ady-hI-5gd" id="k8l-FS-kH7"/>
+                                                <action selector="stepCameraLeft:" target="Ady-hI-5gd" id="B0w-cy-qB0"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Turn Camera Right" keyEquivalent="" id="TrK-Wh-9oz">
-                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        <menuItem isSeparatorItem="YES" id="kVD-8V-VmP"/>
+                                        <menuItem title="Turn Camera Up" keyEquivalent="" id="TrK-Wh-9oz">
                                             <connections>
-                                                <action selector="turnCameraRight:" target="Ady-hI-5gd" id="9lq-D8-WKM"/>
+                                                <action selector="turnCameraUp:" target="Ady-hI-5gd" id="v8k-aO-zVv"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Turn Camera Right" keyEquivalent="" id="c0q-ZB-UjT">
+                                            <connections>
+                                                <action selector="turnCameraRight:" target="Ady-hI-5gd" id="Tra-8H-UzL"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Turn Camera Down" keyEquivalent="" id="R05-0Y-k83">
+                                            <connections>
+                                                <action selector="turnCameraDown:" target="Ady-hI-5gd" id="Czu-0G-8hP"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Turn Camera Left" keyEquivalent="" id="JgR-lY-5o8">
+                                            <connections>
+                                                <action selector="turnCameraLeft:" target="Ady-hI-5gd" id="k8l-FS-kH7"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="PzE-jK-uJF"/>

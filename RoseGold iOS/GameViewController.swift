@@ -13,10 +13,14 @@ import MetalKit
 class GameViewController: UIViewController {
     var renderer: Renderer!
     var mtkView: MTKView!
+    @IBOutlet var joystickView: JoystickView!
+    private var joystick: float2!
+    private var joystickTimer: Timer!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let mtkView = self.view as? MTKView else {
+        mtkView = self.view as? MTKView
+        if mtkView == nil {
             print("View of Gameview controller is not an MTKView")
             return
         }
@@ -35,5 +39,35 @@ class GameViewController: UIViewController {
         renderer = newRenderer
         renderer.mtkView(mtkView, drawableSizeWillChange: mtkView.drawableSize)
         mtkView.delegate = renderer
+        
+        let joystickMonitor: JoyStickViewMonitor = { x, y in
+            if x == nil || y == nil {
+                self.joystickTimer?.invalidate()
+                self.joystickTimer = nil
+            } else {
+                self.joystick = 5.0*float2(Float(x!), -Float(y!))
+                if self.joystickTimer == nil {
+                    self.joystickTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { _ in
+                        self.renderer.moveCameraToward(delta: self.joystick)
+                    }
+                }
+            }
+        }
+        joystickView.monitor = joystickMonitor
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            if touch.view != mtkView {
+                return
+            }
+            let touchX = touch.location(in: mtkView).x
+            let touchX0 = touch.previousLocation(in: mtkView).x
+            let touchY = touch.location(in: mtkView).y
+            let touchY0 = touch.previousLocation(in: mtkView).y
+            let angleX = (touchX - touchX0)*UIScreen.main.scale/UIScreen.main.bounds.width
+            let angleY = (touchY - touchY0)*UIScreen.main.scale/UIScreen.main.bounds.height*0.25
+            renderer.turnCameraToward(delta: float2(Float(angleX), -Float(angleY))*Float.pi)
+        }
     }
 }

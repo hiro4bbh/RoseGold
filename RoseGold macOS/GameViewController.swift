@@ -13,10 +13,11 @@ import MetalKit
 class GameViewController: NSViewController {
     var renderer: Renderer!
     var mtkView: MTKView!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let mtkView = self.view as? MTKView else {
+        mtkView = self.view as? MTKView
+        if mtkView == nil {
             print("View attached to GameViewController is not an MTKView")
             return
         }
@@ -39,11 +40,17 @@ class GameViewController: NSViewController {
     @IBAction func resetImage(_ sender: NSMenuItem) {
         renderer.resetTexture()
     }
+    @IBAction func turnCameraDown(_ sender: NSMenuItem) {
+        renderer.turnCameraToward(delta: float2(0.0, -0.1*Float.pi))
+    }
     @IBAction func turnCameraLeft(_ sender: NSMenuItem) {
-        renderer.turnCameraToward(delta: float2(-Float.pi/8.0, 0.0))
+        renderer.turnCameraToward(delta: float2(-0.1*Float.pi, 0.0))
     }
     @IBAction func turnCameraRight(_ sender: NSMenuItem) {
-        renderer.turnCameraToward(delta: float2(Float.pi/8.0, 0.0))
+        renderer.turnCameraToward(delta: float2(0.1*Float.pi, 0.0))
+    }
+    @IBAction func turnCameraUp(_ sender: NSMenuItem) {
+        renderer.turnCameraToward(delta: float2(0.0, 0.1*Float.pi))
     }
     @IBAction func saveImage(_ sender: NSMenuItem) {
         var path = FileManager.default.homeDirectoryForCurrentUser
@@ -66,9 +73,15 @@ class GameViewController: NSViewController {
         }
     }
     @IBAction func stepCameraBackward(_ sender: NSMenuItem) {
-        renderer.moveCameraToward(delta: float3(0.0, 0.0, -5.0))
+        renderer.moveCameraToward(delta: float2(0.0, -5.0))
+    }
+    @IBAction func stepCameraLeft(_ sender: NSMenuItem) {
+        renderer.moveCameraToward(delta: float2(-5.0, 0.0))
+    }
+    @IBAction func stepCameraRight(_ sender: NSMenuItem) {
+        renderer.moveCameraToward(delta: float2(5.0, 0.0))
     }
     @IBAction func stepCameraToward(_ sender: NSMenuItem) {
-        renderer.moveCameraToward(delta: float3(0.0, 0.0, 5.0))
+        renderer.moveCameraToward(delta: float2(0.0, 5.0))
     }
 }
