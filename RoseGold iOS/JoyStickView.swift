@@ -32,8 +32,7 @@ public typealias JoyStickViewMonitor = (_ x: CGFloat?, _ y: CGFloat?) -> ()
 
         borderLayer = CAShapeLayer.init()
         borderLayer.path = UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height)).cgPath
-        borderLayer.strokeColor = UIColor.white.cgColor
-        borderLayer.fillColor = UIColor.clear.cgColor
+        borderLayer.fillColor = UIColor.init(white: 1.0, alpha: 0.2).cgColor
         layer.addSublayer(borderLayer)
 
         buttonLayer = CAShapeLayer.init()
