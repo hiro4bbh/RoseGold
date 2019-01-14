@@ -22,11 +22,12 @@
  *                                      Mohanty et al 2012.
  *
  */
-#include <metal_stdlib>
-using namespace metal;
 
 #ifndef Loki_Header_metal
 #define Loki_Header_metal
+#include <metal_stdlib>
+using namespace metal;
+
 class Loki {
 private:
     thread float seed;

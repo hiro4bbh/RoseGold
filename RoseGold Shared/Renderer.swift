@@ -6,8 +6,6 @@
 //  Copyright © 2019 Tatsuhiro Aoshima. All rights reserved.
 //
 
-// Our platform independent renderer class
-
 import Metal
 import MetalKit
 import simd
@@ -150,10 +148,13 @@ class Renderer: NSObject, MTKViewDelegate {
 
             // Run the compute shader.
             if let computeEncoder = commandBuffer.makeComputeCommandEncoder() {
+                computeEncoder.label = "Primary Compute Encoder"
+                computeEncoder.pushDebugGroup("Run roseGoldKernel")
                 computeEncoder.setComputePipelineState(computePipelineState)
                 computeEncoder.setBuffer(environmentBuffer, offset: 0, index: BufferIndex.environment.rawValue)
                 computeEncoder.setTexture(outputTexture, index: TextureIndex.output.rawValue)
                 computeEncoder.dispatchThreadgroups(threadGroupCount, threadsPerThreadgroup: threadGroupSize)
+                computeEncoder.popDebugGroup()
                 computeEncoder.endEncoding()
             }
  
@@ -163,7 +164,6 @@ class Renderer: NSObject, MTKViewDelegate {
                 /// Final pass rendering code here
                 if let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) {
                     renderEncoder.label = "Primary Render Encoder"
-
                     renderEncoder.pushDebugGroup("Draw Box")
                     renderEncoder.setRenderPipelineState(renderPipelineState)
                     renderEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(viewportSize.x), height: Double(viewportSize.y), znear: 0.0, zfar: 1.0))
@@ -172,8 +172,8 @@ class Renderer: NSObject, MTKViewDelegate {
                     renderEncoder.setFragmentTexture(outputTexture, index: TextureIndex.output.rawValue)
                     renderEncoder.drawPrimitives(type: MTLPrimitiveType.triangle, vertexStart: 0, vertexCount: 6)
                     renderEncoder.popDebugGroup()
-
                     renderEncoder.endEncoding()
+
                     if let drawable = view.currentDrawable {
                         commandBuffer.present(drawable)
                     }

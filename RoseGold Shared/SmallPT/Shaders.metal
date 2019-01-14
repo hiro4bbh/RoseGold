@@ -6,22 +6,21 @@
 //  Copyright © 2019 Tatsuhiro Aoshima. All rights reserved.
 //
 
-// File for Metal kernel and shader functions
-
 #include <metal_stdlib>
-#include "../loki/Header.metal"
 using namespace metal;
 
-#define WIDTH  1024
-#define HEIGHT 1024
+#include "../loki/Header.metal"
 
-#define NSAMPLE  1
-#define MAXDEPTH 5
 constant float EPS_F = 1e-8;
 constant float DMAX_F = 1e+8;
 
+constant float WIDTH  = 1024.0;
+constant float HEIGHT = 1024.0;
+constant int NSAMPLE  = 1;
+constant int MAXDEPTH = 4;
+
 enum class Refl {
-    Diff, Spec, Refr
+    None, Diff, Spec, Refr
 };
 
 struct Ray {
@@ -59,20 +58,19 @@ struct Sphere {
     }
 };
 
-struct IntersectResult {
+struct Intersection {
     int    id;
     float  t;
     Sphere s;
 
-    IntersectResult(int id, float t, Sphere s) {
+    Intersection(int id, float t, Sphere s) {
         this->id = id;
         this->t = t;
         this->s = s;
     }
 };
 
-#define NSPHERE 9
-constant Sphere spheres[NSPHERE] = {
+constant Sphere spheres[] = {
     {  1e5, float3(-1e5+1.0,   40.8,      81.6),       float3(0.0), float3(0.75, 0.25, 0.25), Refl::Diff},
     {  1e5, float3( 1e5+99.0,  40.8,      81.6),       float3(0.0), float3(0.25, 0.25, 0.75), Refl::Diff},
     {  1e5, float3(50.0,       40.8,      -1e5),       float3(0.0), float3(0.75, 0.75, 0.75), Refl::Diff},
@@ -81,14 +79,15 @@ constant Sphere spheres[NSPHERE] = {
     {  1e5, float3(50.0,        1e5+81.6, 81.6),       float3(0.0), float3(0.75, 0.75, 0.75), Refl::Diff},
     { 16.5, float3(27.0,       16.5,      47.0),       float3(0.0), float3(1.00, 1.00, 1.00), Refl::Spec},
     { 16.5, float3(73.0,       16.5,      78.0),       float3(0.0), float3(1.00, 1.00, 1.00), Refl::Refr},
-    {600.0, float3(50.0,      681.33,     81.6),       float3(4.0), float3(0.00, 0.00, 0.00), Refl::Diff}
+    {600.0, float3(50.0,      681.33,     81.6),       float3(4.0), float3(0.00, 0.00, 0.00), Refl::Diff},
+    {  0.0, float3( 0.0,        0.0,       0.0),       float3(0.0), float3(0.00, 0.00, 0.00), Refl::None}
 };
 
-IntersectResult intersect(Ray r, int avoid) {
+Intersection intersect(Ray r, int avoid) {
     int target_id = -1;
     float t = DMAX_F;
     Sphere target = spheres[0];
-    for (int i = 0; i < NSPHERE; ++i) {
+    for (int i = 0; spheres[i].refl != Refl::None; ++i) {
         Sphere sphere = spheres[i];
         float d = sphere.intersect(r);
         if (i != avoid && d != 0.0 && d < t) {
@@ -97,8 +96,8 @@ IntersectResult intersect(Ray r, int avoid) {
             target = sphere;
         }
     }
-    IntersectResult ir(target_id, t, target);
-    return ir;
+    Intersection isect(target_id, t, target);
+    return isect;
 }
 
 float3 jitter(float3 d, float phi, float sina, float cosa) {
@@ -111,10 +110,10 @@ float3 radiance(Ray ray, Loki loki) {
     float3 mask = float3(1.0);
     int id = -1;
     for (int depth = 0; depth < MAXDEPTH; ++depth) {
-        IntersectResult iray = intersect(ray, id);
-        float t = iray.t;
-        Sphere obj = iray.s;
-        id = iray.id;
+        Intersection isect = intersect(ray, id);
+        float t = isect.t;
+        Sphere obj = isect.s;
+        id = isect.id;
         if (id < 0) {
             break;
         }

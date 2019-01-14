@@ -6,17 +6,12 @@
 //  Copyright © 2019 Tatsuhiro Aoshima. All rights reserved.
 //
 
-// File for Metal kernel and shader functions
-
 #include <metal_stdlib>
+using namespace metal;
 #include <simd/simd.h>
 
-// Including header shared between this Metal shader code and Swift/C code executing Metal API commands
-#import "ShaderTypes.h"
-
+#include "ShaderTypes.h"
 #include "SmallPT/Header.metal"
-
-using namespace metal;
 
 typedef struct {
     float4 position [[position]];

@@ -6,9 +6,6 @@
 //  Copyright © 2019 Tatsuhiro Aoshima. All rights reserved.
 //
 
-//
-//  Header containing types and enum constants shared between Metal shaders and Swift/ObjC source
-//
 #ifndef ShaderTypes_h
 #define ShaderTypes_h
 
