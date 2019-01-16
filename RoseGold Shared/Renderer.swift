@@ -75,7 +75,7 @@ class Renderer: NSObject, MTKViewDelegate {
         lastReportTime = startTime
         lastReportNframe = 0.0
         nframe = 0.0
-        firstCameraPosition = float3(50.0, 40.8, 150.0)
+        firstCameraPosition = float3(50.0, 40.0, 150.0)
         firstCameraDirection = float2(0.0, 0.0)
         cameraPosition = firstCameraPosition
         cameraDirection = firstCameraDirection

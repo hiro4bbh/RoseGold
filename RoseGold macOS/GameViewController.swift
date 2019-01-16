@@ -77,19 +77,19 @@ class GameViewController: NSViewController {
         }
     }
     @IBAction func stepCameraBackward(_ sender: NSMenuItem) {
-        renderer.accelCamera(float2(0.0, -5.0))
+        renderer.accelCamera(float2(0.0, -2.0))
         renderer.accelCamera()
     }
     @IBAction func stepCameraLeft(_ sender: NSMenuItem) {
-        renderer.accelCamera(float2(-5.0, 0.0))
+        renderer.accelCamera(float2(-2.0, 0.0))
         renderer.accelCamera()
     }
     @IBAction func stepCameraRight(_ sender: NSMenuItem) {
-        renderer.accelCamera(float2(5.0, 0.0))
+        renderer.accelCamera(float2(2.0, 0.0))
         renderer.accelCamera()
     }
     @IBAction func stepCameraToward(_ sender: NSMenuItem) {
-        renderer.accelCamera(float2(0.0, 5.0))
+        renderer.accelCamera(float2(0.0, 2.0))
         renderer.accelCamera()
     }
 }

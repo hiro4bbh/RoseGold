@@ -50,7 +50,8 @@ kernel void roseGoldKernel(constant Environment *env [[buffer(BufferIndexEnviron
         // Return early if the pixel is out of bounds
         return;
     }
-    float3 gamma = ray_trace(float2(gid.x, output.get_height() - gid.y), env->cameraPosition, env->cameraDirection, env->nframe);
+    float2 position = float2(gid.x, output.get_height() - gid.y);
+    float3 gamma = ray_trace(position, env->cameraPosition, env->cameraDirection, env->nframe);
     gamma /= env->nframe;
     gamma += pow(float3(output.read(gid).xyz), float3(2.2))*((env->nframe - 1)/env->nframe);
     float4 color = float4(pow(clamp(gamma, 0.0, 1.0), float3(1.0/2.2)), 1.0);

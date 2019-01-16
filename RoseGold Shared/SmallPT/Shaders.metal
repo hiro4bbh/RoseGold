@@ -11,7 +11,7 @@ using namespace metal;
 
 #include "../loki/Header.metal"
 
-constant float EPS_F = 1e-8;
+constant float EPS_F  = 1e-8;
 constant float DMAX_F = 1e+8;
 
 constant float WIDTH  = 1024.0;
@@ -148,8 +148,7 @@ float3 radiance(Ray ray, Loki loki) {
             ray = Ray(x, reflect(ray.d, n));
             if (cos2t > 0.0) {
                 float3 tdir = normalize(ray.d*nnt + sign(a)*n*(ddn*nnt + sqrt(cos2t)));
-                float R0 = ((nt - nc)*(nt - nc))/((nt + nc)*(nt + nc)),
-                c = 1.0 - mix(ddn, dot(tdir, n), float(a > 0.0));
+                float R0 = ((nt - nc)*(nt - nc))/((nt + nc)*(nt + nc)), c = 1.0 - mix(ddn, dot(tdir, n), float(a > 0.0));
                 float Re = R0 + (1.0 - R0)*c*c*c*c*c;
                 float P = 0.25 + 0.5*Re, RP = Re/P, TP=(1.0 - Re)/(1.0 - P);
                 if (loki.rand() < P) {
@@ -165,17 +164,16 @@ float3 radiance(Ray ray, Loki loki) {
 }
 
 float3 ray_trace(float2 position, float3 camPos, float2 camDir, float seed) {
-    float2 uv = 2.0*position/float2(WIDTH, HEIGHT) - 1.0;
-    float2 iResolution(WIDTH, HEIGHT);
+    float3 cz = float3(cos(camDir.y)*sin(camDir.x), sin(camDir.y), -cos(camDir.y)*cos(camDir.x));
+    float3 cx = float3(sin(camDir.x + 0.5*M_PI_F), 0.0, -cos(camDir.x + 0.5*M_PI_F));
+    float3 cy = normalize(cross(cx, cz));
+    cx = cross(cz, cy);
     float3 color = float3(0.0);
     Loki loki(position.x, position.y, seed);
     for (int i = 0; i < NSAMPLE; ++i) {
-        float3 samPos = camPos - 0.5 + 0.5*float3(loki.rand(), loki.rand(), loki.rand());
-        float3 cz = float3(cos(camDir.y)*sin(camDir.x), sin(camDir.y), -cos(camDir.y)*cos(camDir.x));
-        float3 cx = float3(sin(camDir.x + 0.5*M_PI_F), 0.0, -cos(camDir.x + 0.5*M_PI_F));
-        float3 cy = normalize(cross(cx, cz));
-        cx = cross(cz, cy);
-        color += radiance(Ray(samPos, normalize((iResolution.x/iResolution.y*uv.x*cx + uv.y*cy) + cz)), loki);
+        float2 e = float2(loki.rand(), loki.rand()) - 0.5;
+        float3 d = 2.0*((position.x + e.x)/WIDTH - 0.5)*cx + 2.0*((position.y + e.y)/HEIGHT - 0.5)*cy + cz;
+        color += radiance(Ray(camPos, normalize(d)), loki);
     }
     return color/float(NSAMPLE);
 }

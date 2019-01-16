@@ -43,7 +43,7 @@ class GameViewController: UIViewController {
             if x == nil || y == nil {
                 self.renderer.accelCamera()
             } else {
-                self.renderer.accelCamera(5.0*float2(Float(x!), -Float(y!)))
+                self.renderer.accelCamera(2.0*float2(Float(x!), -Float(y!)))
             }
         }
         joystickView.monitor = joystickMonitor
