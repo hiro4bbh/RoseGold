@@ -56,6 +56,9 @@ struct Sphere {
         }
         return 0.0;
     }
+    float3 normal(float3 x) {
+        return normalize(x - p);
+    }
 };
 
 struct Intersection {
@@ -117,19 +120,9 @@ float3 radiance(Ray ray, Loki loki) {
         if (id < 0) {
             break;
         }
-        float3 x = t*ray.d + ray.o;
-        float3 n = normalize(x - obj.p), nl = n*sign(-dot(n, ray.d));
-        // Russian Roulette.
+        float3 x = ray.o + t*ray.d;
+        float3 n = obj.normal(x), nl = n*sign(-dot(n, ray.d));
         float3 f = obj.c;
-        /* FIXME: Avoid Infinite Loop
-        float p = (f.x > f.y && f.x > f.z) ? f.x : (f.y > f.z ? f.y : f.z);
-        if (depth >= 5) {
-            if (loki.rand() >= p) {
-                break;
-            }
-            f = f/p;
-        }
-        */
         // Calculate the material.
         if (obj.refl == Refl::Diff) {
             float r = loki.rand();
@@ -169,9 +162,9 @@ float3 ray_trace(float2 position, float3 camPos, float2 camDir, float seed) {
     float3 cy = normalize(cross(cx, cz));
     cx = cross(cz, cy);
     float3 color = float3(0.0);
-    Loki loki(position.x, position.y, seed);
+    Loki loki(position.x + 1, position.y + 1, seed);
     for (int i = 0; i < NSAMPLE; ++i) {
-        float2 e = float2(loki.rand(), loki.rand()) - 0.5;
+        float2 e = float2(loki.rand(), loki.rand());
         float3 d = 2.0*((position.x + e.x)/WIDTH - 0.5)*cx + 2.0*((position.y + e.y)/HEIGHT - 0.5)*cy + cz;
         color += radiance(Ray(camPos, normalize(d)), loki);
     }
