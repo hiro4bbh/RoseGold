@@ -55,6 +55,7 @@
 		455395AC21EA150A00950C9E /* MTLTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTLTexture.swift; sourceTree = "<group>"; };
 		456E78F72212DE9B00D38C0E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		456E78F82212E50500D38C0E /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		456E78F92212E75700D38C0E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		45DCAAE521EB42C10050482C /* JoyStickView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoyStickView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -82,6 +83,7 @@
 				456E78F82212E50500D38C0E /* Resources */,
 				4553955621E9A59A00950C9E /* Products */,
 				456E78F72212DE9B00D38C0E /* README.md */,
+				456E78F92212E75700D38C0E /* LICENSE */,
 				4553955721E9A59A00950C9E /* RoseGold iOS */,
 				4553957621E9A59A00950C9E /* RoseGold macOS */,
 				4553954C21E9A59700950C9E /* RoseGold Shared */,
