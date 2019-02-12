@@ -23,13 +23,13 @@ There are too many problems:
 
 ### macOS Mojave 10.14.3 (MacBook Early 2016)
 
-![MacBook (Early 2016)](RoseGold-MacBookEarly2016-1519.png "MacBook (Early 2016)")
+![MacBook (Early 2016)](Resources/RoseGold-MacBookEarly2016-1519.png "MacBook (Early 2016)")
 
 - Total 1519 frames (about 20 fps)
 
 ### iOS 12.1.2 (iPhone XR 2018)
 
-![iPhone XR (2018)](RoseGold-iPhoneXR-about1500.png "iPhone XR (2018)")
+![iPhone XR (2018)](Resources/RoseGold-iPhoneXR-about1500.png "iPhone XR (2018)")
 
 - About 1500 frames (about 50 fps)
 
