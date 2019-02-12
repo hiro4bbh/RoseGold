@@ -35,5 +35,5 @@ There are too many problems:
 
 ## References
 - __Beason__, K. __(2010)__ _"smallpt: Global Illumination in 99 lines of C++."_ Retrieved on 2019/2/12, [http://www.kevinbeason.com/smallpt/](http://www.kevinbeason.com/smallpt/).
-- __Pharr__, M., W. Jakob, and G. Humphreys. __(2018)__ __Physically Based Rendering From Theory to Implementation Third Edition.__ (online version at [http://www.pbr-book.org/](http://www.pbr-book.org/) retrieved on 2019/2/12)
+- __Pharr__, M., W. Jakob, and G. Humphreys. __(2018)__ _Physically Based Rendering From Theory to Implementation Third Edition._ (online version at [http://www.pbr-book.org/](http://www.pbr-book.org/) retrieved on 2019/2/12)
 - __Yi__, X. __(2018)__ _"imxieyi/SmallPT-Metal: SmallPT port to iOS in Metal."_ Retrieved on 2019/2/12. [https://github.com/imxieyi/SmallPT-Metal](https://github.com/imxieyi/SmallPT-Metal).
