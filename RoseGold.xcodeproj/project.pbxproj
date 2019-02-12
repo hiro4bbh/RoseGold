@@ -77,22 +77,22 @@
 		4553954721E9A59700950C9E = {
 			isa = PBXGroup;
 			children = (
-				4553954C21E9A59700950C9E /* RoseGold Shared */,
+				4553955621E9A59A00950C9E /* Products */,
 				4553955721E9A59A00950C9E /* RoseGold iOS */,
 				4553957621E9A59A00950C9E /* RoseGold macOS */,
-				4553955621E9A59A00950C9E /* Products */,
+				4553954C21E9A59700950C9E /* RoseGold Shared */,
 			);
 			sourceTree = "<group>";
 		};
 		4553954C21E9A59700950C9E /* RoseGold Shared */ = {
 			isa = PBXGroup;
 			children = (
-				455395A521E9A64200950C9E /* SmallPT */,
+				4553955021E9A59A00950C9E /* Assets.xcassets */,
 				4553959E21E9A61700950C9E /* loki */,
 				4553959721E9A5D600950C9E /* Renderer.swift */,
 				4553959821E9A5D600950C9E /* Shaders.metal */,
 				4553959621E9A5D600950C9E /* ShaderTypes.h */,
-				4553955021E9A59A00950C9E /* Assets.xcassets */,
+				455395A521E9A64200950C9E /* SmallPT */,
 			);
 			path = "RoseGold Shared";
 			sourceTree = "<group>";
@@ -111,10 +111,10 @@
 			children = (
 				4553955821E9A59A00950C9E /* AppDelegate.swift */,
 				4553955A21E9A59A00950C9E /* GameViewController.swift */,
-				4553955C21E9A59A00950C9E /* Main.storyboard */,
-				4553955F21E9A59A00950C9E /* LaunchScreen.storyboard */,
 				4553956221E9A59A00950C9E /* Info.plist */,
 				45DCAAE521EB42C10050482C /* JoyStickView.swift */,
+				4553955F21E9A59A00950C9E /* LaunchScreen.storyboard */,
+				4553955C21E9A59A00950C9E /* Main.storyboard */,
 			);
 			path = "RoseGold iOS";
 			sourceTree = "<group>";
@@ -122,11 +122,11 @@
 		4553957621E9A59A00950C9E /* RoseGold macOS */ = {
 			isa = PBXGroup;
 			children = (
-				455395AC21EA150A00950C9E /* MTLTexture.swift */,
 				4553957721E9A59A00950C9E /* AppDelegate.swift */,
 				4553957921E9A59A00950C9E /* GameViewController.swift */,
-				4553957B21E9A59A00950C9E /* Main.storyboard */,
 				4553957E21E9A59A00950C9E /* Info.plist */,
+				4553957B21E9A59A00950C9E /* Main.storyboard */,
+				455395AC21EA150A00950C9E /* MTLTexture.swift */,
 			);
 			path = "RoseGold macOS";
 			sourceTree = "<group>";

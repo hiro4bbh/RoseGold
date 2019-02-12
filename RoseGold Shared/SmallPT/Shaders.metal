@@ -74,15 +74,28 @@ struct Intersection {
 };
 
 constant Sphere spheres[] = {
+    // Walls
     {  1e5, float3(-1e5+1.0,   40.8,      81.6),       float3(0.0), float3(0.75, 0.25, 0.25), Refl::Diff},
     {  1e5, float3( 1e5+99.0,  40.8,      81.6),       float3(0.0), float3(0.25, 0.25, 0.75), Refl::Diff},
     {  1e5, float3(50.0,       40.8,      -1e5),       float3(0.0), float3(0.75, 0.75, 0.75), Refl::Diff},
     {  1e5, float3(50.0,       40.8,       1e5+170.0), float3(0.0), float3(0.00, 0.00, 0.00), Refl::Diff},
     {  1e5, float3(50.0,       -1e5,      81.6),       float3(0.0), float3(0.75, 0.75, 0.75), Refl::Diff},
     {  1e5, float3(50.0,        1e5+81.6, 81.6),       float3(0.0), float3(0.75, 0.75, 0.75), Refl::Diff},
+    // A specular reflecting ball
     { 16.5, float3(27.0,       16.5,      47.0),       float3(0.0), float3(1.00, 1.00, 1.00), Refl::Spec},
-    { 16.5, float3(73.0,       16.5,      78.0),       float3(0.0), float3(1.00, 1.00, 1.00), Refl::Refr},
+    // A refracting ball
+    { 16.5, float3(73.0,       16.5,      98.0),       float3(0.0), float3(1.00, 1.00, 1.00), Refl::Refr},
+    // A kixby
+    { 16.5, float3(77.0,       16.5,      47.0),       float3(0.0), float3(255.0/255.0, 141.0/255.0, 198.0/255.0), Refl::Diff},
+    {  6.5, float3(67.0,        6.5,      47.0),       float3(0.0), float3(181.0/255.0,  23.0/255.0,   0.0/255.0), Refl::Diff},
+    {  6.5, float3(87.0,        6.5,      47.0),       float3(0.0), float3(181.0/255.0,  23.0/255.0,   0.0/255.0), Refl::Diff},
+    {  6.5, float3(62.0,       21.5,      47.0),       float3(0.0), float3(255.0/255.0, 141.0/255.0, 198.0/255.0), Refl::Diff},
+    {  6.5, float3(92.0,       21.5,      47.0),       float3(0.0), float3(255.0/255.0, 141.0/255.0, 198.0/255.0), Refl::Diff},
+    {  2.5, float3(72.0,       21.5,      62.0),       float3(0.0), float3(  0.0/255.0,   0.0/255.0,   0.0/255.0), Refl::Refr},
+    {  2.5, float3(82.0,       21.5,      62.0),       float3(0.0), float3(  0.0/255.0,   0.0/255.0,   0.0/255.0), Refl::Refr},
+    // A light source
     {600.0, float3(50.0,      681.33,     81.6),       float3(4.0), float3(0.00, 0.00, 0.00), Refl::Diff},
+    // The empty object
     {  0.0, float3( 0.0,        0.0,       0.0),       float3(0.0), float3(0.00, 0.00, 0.00), Refl::None}
 };
 
