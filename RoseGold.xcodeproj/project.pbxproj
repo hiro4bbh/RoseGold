@@ -53,6 +53,8 @@
 		455395A621E9A64F00950C9E /* Header.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Header.metal; sourceTree = "<group>"; };
 		455395A721E9A65000950C9E /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		455395AC21EA150A00950C9E /* MTLTexture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTLTexture.swift; sourceTree = "<group>"; };
+		456E78F72212DE9B00D38C0E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		456E78F82212E50500D38C0E /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
 		45DCAAE521EB42C10050482C /* JoyStickView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoyStickView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -77,7 +79,9 @@
 		4553954721E9A59700950C9E = {
 			isa = PBXGroup;
 			children = (
+				456E78F82212E50500D38C0E /* Resources */,
 				4553955621E9A59A00950C9E /* Products */,
+				456E78F72212DE9B00D38C0E /* README.md */,
 				4553955721E9A59A00950C9E /* RoseGold iOS */,
 				4553957621E9A59A00950C9E /* RoseGold macOS */,
 				4553954C21E9A59700950C9E /* RoseGold Shared */,
