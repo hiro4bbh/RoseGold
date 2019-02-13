@@ -11,13 +11,17 @@ The several features are implemented:
 - Joystick implementation for moving the camera and sliding to rotating the camera (iOS).
 - An well-known cute mascot _kixby_.
 
-If you are interested in ray-tracing, I will recommend you to refer __(Pharr+ 2018)__.
+If you are interested in ray-tracing, I will recommend you to refer __Pharr+ (2018)__.
 I have no plan to maintain RoseGold ...
 
-There are too many problems:
+There are too many problems, for example:
 
-- Implement upsampling for reducing the noise especially in a specular reflecting balls.
-- Ensure the errors of the floating number operations.
+- Support more object primitives other than the simple balls __(Pharr+ 2018, chapter 3)__.
+- Ensure the errors of the floating number operations __(Pharr+ 2018, section 3.9)__.
+- Implement acceleration structures for testing object intersections faster __(Pharr+ 2018, chapter 4)__.
+- Implement upsampling for reducing the noise especially in a specular reflecting balls __(Pharr+ 2018, chapter 7)__.
+- Implement volume rendering and more efficient bidirectional methods __(Pharr+ 2018, chapter 15 and 16)__.
+
 
 ## Screenshots
 
@@ -35,5 +39,5 @@ There are too many problems:
 
 ## References
 - __Beason__, K. __(2010)__ _"smallpt: Global Illumination in 99 lines of C++."_ Retrieved on 2019/2/12, [http://www.kevinbeason.com/smallpt/](http://www.kevinbeason.com/smallpt/).
-- __Pharr__, M., W. Jakob, and G. Humphreys. __(2018)__ _Physically Based Rendering From Theory to Implementation Third Edition._ (online version at [http://www.pbr-book.org/](http://www.pbr-book.org/) retrieved on 2019/2/12)
+- __Pharr__, M., W. Jakob, and G. Humphreys. __(2018)__ _Physically Based Rendering From Theory to Implementation Third Edition._ (online version at [http://www.pbr-book.org/3ed-2018](http://www.pbr-book.org/3ed-2018) retrieved on 2019/2/12)
 - __Yi__, X. __(2018)__ _"imxieyi/SmallPT-Metal: SmallPT port to iOS in Metal."_ Retrieved on 2019/2/12. [https://github.com/imxieyi/SmallPT-Metal](https://github.com/imxieyi/SmallPT-Metal).
